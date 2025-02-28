@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import traceback
+from datetime import datetime
 
 import oss2
 import requests
@@ -58,12 +59,20 @@ class OSS:
         return list_result.cname
 
     def _update_cname(self, cname_info: CnameInfo, private_key: str, certificate: str):
-        # 通过force=True设置强制覆盖旧版证书。
-        if cname_info.certificate:  # 如果已经绑定了证书, 传入证书ID可以直接更新证书，避免创建一个新的
-            cert = oss2.models.CertInfo(cert_id=cname_info.certificate.cert_id,
-                                        certificate=certificate, private_key=private_key, force=True)
-        else:  # 如果没有绑定证书，直接传入证书内容，会创建一个新的证书
+        # 检查是否已绑定证书和证书是否过期
+        create_new_cert = True  # 默认创建一个新的证书
+        if cname_info.certificate:
+            exp_date_obj = datetime.strptime(cname_info.certificate.valid_end_date, '%b %d %H:%M:%S %Y GMT')
+            if exp_date_obj > datetime.utcnow():  # 证书未过期
+                create_new_cert = False
+
+        if create_new_cert:  # 如果没有绑定证书，直接传入证书内容，会创建一个新的证书
+            print("证书已过期或未绑定证书，将创建新的证书")
             cert = oss2.models.CertInfo(certificate=certificate, private_key=private_key, force=True)
+        else:  # 如果已经绑定了证书且证书未过期, 传入证书ID可以直接更新证书，避免创建一个新的
+            print("证书未过期，将更新证书")
+            cert = oss2.models.CertInfo(cert_id=cname_info.certificate.cert_id, certificate=certificate,
+                                        private_key=private_key, force=True)
 
         input_ = oss2.models.PutBucketCnameRequest(cname_info.domain, cert)
         self.bucket.put_bucket_cname(input_)
