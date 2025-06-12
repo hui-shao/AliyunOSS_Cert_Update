@@ -1,4 +1,4 @@
-import configparser
+import json
 import os
 import sys
 import time
@@ -83,31 +83,35 @@ if __name__ == '__main__':
 
     try:
         # 读取配置文件
-        config = configparser.ConfigParser()
-        config.read('config.ini', encoding='utf-8')
+        file = open("config.json","r")
+        config = json.load(file)
+        
+        access_key_id = config['Auth']['alibaba_cloud_access_key_id']
+        access_key_secret = config['Auth']['alibaba_cloud_access_key_secret']
 
-        # 从配置文件中读取配置信息
-        private_key_path = config.get('Cert', 'private_key_path')
-        certificate_path = config.get('Cert', 'certificate_path')
+        for each in config['OSS']:
+            # 从配置文件中读取配置信息
+            private_key_path = each['private_key_path']
+            certificate_path = each['certificate_path']
 
-        # 读取证书文件
-        with open(private_key_path, 'r') as f:
-            private_key_ = f.read()
-        with open(certificate_path, 'r') as f:
-            certificate_ = f.read()
+            # 读取证书文件
+            with open(private_key_path, 'r') as f:
+                private_key_ = f.read()
+            with open(certificate_path, 'r') as f:
+                certificate_ = f.read()
 
-        # 读取自定义域名
-        target_cname_ = config.get('Cert', 'target_cname')
+            # 读取自定义域名
+            target_cname_ = each['target_cname']
 
-        o = OSS(
-            config.get('Auth', 'alibaba_cloud_access_key_id'),
-            config.get('Auth', 'alibaba_cloud_access_key_secret'),
-            config.get('OSS', 'endpoint'),
-            config.get('OSS', 'bucket_name'),
-            config.get('OSS', 'region')
-        )
+            o = OSS(
+                access_key_id,
+                access_key_secret,
+                each['endpoint'],
+                each['bucket_name'],
+                each['region']
+            )
 
-        o.run_update(target_cname=target_cname_, private_key=private_key_, certificate=certificate_)
+            o.run_update(target_cname=target_cname_, private_key=private_key_, certificate=certificate_)
 
     except KeyboardInterrupt:
         print("程序已被用户终止")
