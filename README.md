@@ -11,9 +11,9 @@
 pip install -r requirements.txt
 ```
 
-然后，将 `config.ini.example` 复制为 `config.ini`，并填写相应的配置信息。
+然后，将 `config.example.json` 复制为 `config.json`，并填写相应的配置信息。
 ```bash
-cp config.ini.example config.ini
+cp config.example.json config.json
 ```
 
 对于其中的 `alibaba_cloud_access_key_id` 和 `alibaba_cloud_access_key_secret`：

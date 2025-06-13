@@ -8,3 +8,9 @@ __pycache__/
 config.json
 config.ini
 aliyun_update.sh
+
+# python-venv
+Include/
+Lib/
+Scripts/
+pyvenv.cfg

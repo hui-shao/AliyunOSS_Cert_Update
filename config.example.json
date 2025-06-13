@@ -1,0 +1,28 @@
+{
+  "Auth": {
+    "alibaba_cloud_access_key_id": "<ALIBABA_CLOUD_ACCESS_KEY_ID>",
+    "alibaba_cloud_access_key_secret": "<ALIBABA_CLOUD_ACCESS_KEY_SECRET>"
+  },
+  "OSS": [{
+    "endpoint": "https://oss-cn-hangzhou.aliyuncs.com",
+    "region": "cn-hangzhou",
+    "bucket_name": "bucket-name",
+    "target_cname": "xxx.example.tld",
+    "private_key_path": "./privkey.pem",
+    "certificate_path": "./fullchain.pem"
+  },{
+    "endpoint": "https://oss-cn-hangzhou.aliyuncs.com",
+    "region": "cn-hangzhou",
+    "bucket_name": "bucket-name",
+    "target_cname": "xxx.example.tld",
+    "private_key_path": "./privkey.pem",
+    "certificate_path": "./fullchain.pem"
+  },{
+    "endpoint": "https://oss-cn-hangzhou.aliyuncs.com",
+    "region": "cn-hangzhou",
+    "bucket_name": "bucket-name",
+    "target_cname": "xxx.example.tld",
+    "private_key_path": "./privkey.pem",
+    "certificate_path": "./fullchain.pem"
+  }]
+}
