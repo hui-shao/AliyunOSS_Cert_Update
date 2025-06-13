@@ -83,8 +83,8 @@ if __name__ == '__main__':
 
     try:
         # 读取配置文件
-        file = open("config.json","r")
-        config = json.load(file)
+        with open("config.json", "r") as file:
+            config = json.load(file)
         
         access_key_id = config['Auth']['alibaba_cloud_access_key_id']
         access_key_secret = config['Auth']['alibaba_cloud_access_key_secret']
