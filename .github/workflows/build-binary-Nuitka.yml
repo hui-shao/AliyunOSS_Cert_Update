@@ -1,0 +1,87 @@
+name: Nuitka Cross-Platform Build
+
+on:
+  push:
+
+jobs:
+  build-linux:
+    name: Build on Linux
+    runs-on: ubuntu-latest
+    continue-on-error: false
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pip install nuitka
+      - run: |
+          mkdir -p dist
+          pip install nuitka
+          sudo apt-get install -y patchelf
+          nuitka main.py \
+            --standalone \
+            --onefile \
+            --enable-plugin=pylint-warnings \
+            --follow-imports \
+            --include-package-data=oss2 \
+            --include-package=oss2 \
+            --output-dir=dist \
+            --output-filename=aliyun-cert-linux \
+            --remove-output
+          strip dist/aliyun-cert-linux || true
+          sudo apt-get update && sudo apt-get install -y upx || true
+          chmod +x dist/aliyun-cert-linux
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aliyun-cert-linux
+          path: dist/aliyun-cert-linux
+
+  build-windows:
+    name: Build on Windows
+    runs-on: windows-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pip install nuitka
+      - name: Preinstall Nuitka dependency walker
+        run: |
+          $Url = "https://dependencywalker.com/depends22_x64.zip"
+          $Output = "$env:TEMP\depends.zip"
+          Invoke-WebRequest -Uri $Url -OutFile $Output
+          Expand-Archive -Path $Output -DestinationPath "$env:LOCALAPPDATA\Nuitka\Nuitka\Cache\downloads\depends\x86_64" -Force
+      - run: |
+          mkdir dist
+          nuitka main.py --standalone --onefile --output-dir=dist --output-filename=aliyun-cert-win.exe --follow-imports --remove-output
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aliyun-cert-win.exe
+          path: dist/aliyun-cert-win.exe
+
+  build-macos:
+    name: Build on macOS
+    runs-on: macos-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: |
+          pip install -r requirements.txt
+          pip install nuitka
+      - run: |
+          mkdir -p dist
+          python -m nuitka main.py --standalone --onefile --output-dir=dist --output-filename=aliyun-cert-mac --follow-imports --remove-output
+          strip dist/aliyun-cert-mac || true
+          chmod +x dist/aliyun-cert-mac
+      - uses: actions/upload-artifact@v4
+        with:
+          name: aliyun-cert-mac
+          path: dist/aliyun-cert-mac
