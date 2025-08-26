@@ -69,10 +69,14 @@ class OSS:
         if create_new_cert:  # 如果没有绑定证书，直接传入证书内容，会创建一个新的证书
             print("证书已过期或未绑定证书，将创建新的证书")
             cert = oss2.models.CertInfo(certificate=certificate, private_key=private_key, force=True)
-        else:  # 如果已经绑定了证书且证书未过期, 传入证书ID可以直接更新证书，避免创建一个新的
-            print("证书未过期，将更新证书")
-            cert = oss2.models.CertInfo(cert_id=cname_info.certificate.cert_id, certificate=certificate,
-                                        private_key=private_key, force=True)
+        else:  # 如果已经绑定了证书且证书未过期
+            print("证书未过期，将更新证书。当前证书信息如下：")
+            print(vars(cname_info.certificate))
+            # NOTE: 传入证书ID可以直接更新证书，避免创建一个新的？ 确实是没有创建新的，但是，目前来看传入 cert_id 可能到导致伪更新（issue #3）
+            # 因此不再传入 cert_id， 而是使用 previous_cert_id。这样会创建一个新证书并取代原有的进行绑定。
+            # 另外，观察发现，原有证书过期后，会自动从托管列表删除，因此不必担心程序创建大量证书。
+            cert = oss2.models.CertInfo(previous_cert_id=cname_info.certificate.cert_id,
+                                        certificate=certificate, private_key=private_key, force=True)
 
         input_ = oss2.models.PutBucketCnameRequest(cname_info.domain, cert)
         self.bucket.put_bucket_cname(input_)
@@ -85,9 +89,9 @@ if __name__ == '__main__':
         # 读取配置文件
         with open("config.json", "r") as file:
             config = json.load(file)
-        
-        access_key_id = config['Auth']['alibaba_cloud_access_key_id']
-        access_key_secret = config['Auth']['alibaba_cloud_access_key_secret']
+
+        ak_id = config['Auth']['alibaba_cloud_access_key_id']
+        ak_secret = config['Auth']['alibaba_cloud_access_key_secret']
 
         for each in config['OSS']:
             # 从配置文件中读取配置信息
@@ -104,8 +108,8 @@ if __name__ == '__main__':
             target_cname_ = each['target_cname']
 
             o = OSS(
-                access_key_id,
-                access_key_secret,
+                ak_id,
+                ak_secret,
                 each['endpoint'],
                 each['bucket_name'],
                 each['region']

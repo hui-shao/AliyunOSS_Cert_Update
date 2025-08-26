@@ -19,7 +19,7 @@ cp config.example.json config.json
 对于其中的 `alibaba_cloud_access_key_id` 和 `alibaba_cloud_access_key_secret`：
 - 需要在阿里云控制台中，创建一个 RAM 用户，并为其授权。
   - 按照最小权限原则，只需要给予该用户 OSS 以及 **SSL 证书**相关权限即可。注意证书是上传到 SSL 证书服务的，因此这个权限也要有。
-  - 你可以使用系统的权限模版，例如 `AliyunOSSFullAccess`，如果你想要进一步扩展安全性，可以自定义权限。这里是我对 OSS 权限的配置：
+  - 你可以使用系统的权限模版，例如 `AliyunOSSFullAccess` 和 `AliyunYundunCertFullAccess`，如果你想要进一步扩展安全性，可以自定义权限。这里是我对 OSS 权限的配置：
     ```json
     {
       "Version": "1",
@@ -68,6 +68,7 @@ acme.sh --install-cert -d example.com \
 - [如何为OSS Python SDK配置访问凭证](https://help.aliyun.com/zh/oss/developer-reference/python-configuration-access-credentials)
   - 本次使用了“最小化授权的RAM用户的AK”，[RAM 用户管理](https://ram.console.aliyun.com/users)
 - [Python绑定自定义域名](https://help.aliyun.com/zh/oss/developer-reference/map-custom-domain-names-4)
+- [PutCname接口参考文档](https://help.aliyun.com/zh/oss/developer-reference/putcname)
 - [OSS地域和访问域名](https://help.aliyun.com/zh/oss/user-guide/regions-and-endpoints)
 
 
