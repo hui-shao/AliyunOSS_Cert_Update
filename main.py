@@ -3,7 +3,7 @@ import os
 import sys
 import time
 import traceback
-from datetime import datetime
+from datetime import datetime, timezone
 
 import oss2
 import requests
@@ -26,7 +26,7 @@ def _request(method, url, retries=3, **kwargs):
 
 
 class OSS:
-    def __init__(self, access_key_id, access_key_secret, endpoint, bucket_name, region):
+    def __init__(self, access_key_id: str, access_key_secret: str, endpoint: str, bucket_name: str, region: str = "cn-hangzhou"):
         self.auth = oss2.AuthV4(access_key_id, access_key_secret)
         self.endpoint = endpoint
         self.bucket_name = bucket_name
@@ -46,8 +46,8 @@ class OSS:
         for c in cname_list:
             if c.domain == target_cname:
                 return c
-            else:
-                return None
+        else:
+            return None
 
     def get_cname_info(self, isprint: bool = False) -> list:
         list_result = self.bucket.list_bucket_cname()
@@ -63,7 +63,8 @@ class OSS:
         create_new_cert = True  # 默认创建一个新的证书
         if cname_info.certificate:
             exp_date_obj = datetime.strptime(cname_info.certificate.valid_end_date, '%b %d %H:%M:%S %Y GMT')
-            if exp_date_obj > datetime.utcnow():  # 证书未过期
+            exp_date_obj = exp_date_obj.replace(tzinfo=timezone.utc)
+            if exp_date_obj > datetime.now(timezone.utc):  # 证书未过期
                 create_new_cert = False
 
         if create_new_cert:  # 如果没有绑定证书，直接传入证书内容，会创建一个新的证书
