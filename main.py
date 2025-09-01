@@ -62,8 +62,10 @@ class OSS:
         # 检查是否已绑定证书和证书是否过期
         create_new_cert = True  # 默认创建一个新的证书
         if cname_info.certificate:
-            exp_date_obj = datetime.strptime(cname_info.certificate.valid_end_date, '%b %d %H:%M:%S %Y GMT')
-            exp_date_obj = exp_date_obj.replace(tzinfo=timezone.utc)
+            exp_date_obj = datetime.strptime(
+                cname_info.certificate.valid_end_date,
+                '%b %d %H:%M:%S %Y GMT'
+            ).replace(tzinfo=timezone.utc)
             if exp_date_obj > datetime.now(timezone.utc):  # 证书未过期
                 create_new_cert = False
 
