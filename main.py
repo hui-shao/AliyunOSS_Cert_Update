@@ -26,7 +26,7 @@ def _request(method, url, retries=3, **kwargs):
 
 
 class OSS:
-    def __init__(self, access_key_id: str, access_key_secret: str, endpoint: str, bucket_name: str, region: str = "cn-hangzhou"):
+    def __init__(self, access_key_id: str, access_key_secret: str, endpoint: str, bucket_name: str, region: str):
         self.auth = oss2.AuthV4(access_key_id, access_key_secret)
         self.endpoint = endpoint
         self.bucket_name = bucket_name
