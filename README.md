@@ -76,3 +76,8 @@ acme.sh --install-cert -d example.com \
 ### 敏感信息说明
 
 项目包含敏感信息，如阿里云的 `AccessKeyID` 和 `AccessKeySecret`，这些信息不应该被提交到代码仓库中，因此在`.gitignore`文件中添加了相应文件。
+
+
+### 相近项目推荐
+
+- [AliyunOSS_CertUpdate：通过 GitHub Actions 自动申请并更新证书](https://github.com/luodeb/AliyunOSS_CertUpdate/)
